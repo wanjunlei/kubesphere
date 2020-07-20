@@ -20,14 +20,12 @@ import (
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/api/auditregistration/v1alpha1"
-	v1 "k8s.io/api/authentication/v1"
+	"k8s.io/api/authentication/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apiserver/pkg/apis/audit"
 	"k8s.io/apiserver/pkg/authentication/user"
 	k8srequest "k8s.io/apiserver/pkg/endpoints/request"
-	fakek8s "k8s.io/client-go/kubernetes/fake"
 	auditingv1alpha1 "kubesphere.io/kubesphere/pkg/apis/auditing/v1alpha1"
-	v1alpha12 "kubesphere.io/kubesphere/pkg/apiserver/auditing/v1alpha1"
 	"kubesphere.io/kubesphere/pkg/apiserver/request"
 	"kubesphere.io/kubesphere/pkg/client/clientset/versioned/fake"
 	"kubesphere.io/kubesphere/pkg/informers"
@@ -36,10 +34,7 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"testing"
-	"time"
 )
-
-var noResyncPeriodFunc = func() time.Duration { return 0 }
 
 func TestGetAuditLevel(t *testing.T) {
 	webhook := &auditingv1alpha1.Webhook{
@@ -55,8 +50,7 @@ func TestGetAuditLevel(t *testing.T) {
 	}
 
 	ksClient := fake.NewSimpleClientset()
-	k8sClient := fakek8s.NewSimpleClientset()
-	fakeInformerFactory := informers.NewInformerFactories(k8sClient, ksClient, nil, nil, nil, nil)
+	fakeInformerFactory := informers.NewInformerFactories(nil, ksClient, nil, nil, nil, nil)
 
 	a := auditing{
 		webhookLister: fakeInformerFactory.KubeSphereSharedInformerFactory().Auditing().V1alpha1().Webhooks().Lister(),
@@ -84,8 +78,7 @@ func TestAuditing_Enabled(t *testing.T) {
 	}
 
 	ksClient := fake.NewSimpleClientset()
-	k8sClient := fakek8s.NewSimpleClientset()
-	fakeInformerFactory := informers.NewInformerFactories(k8sClient, ksClient, nil, nil, nil, nil)
+	fakeInformerFactory := informers.NewInformerFactories(nil, ksClient, nil, nil, nil, nil)
 
 	a := auditing{
 		webhookLister: fakeInformerFactory.KubeSphereSharedInformerFactory().Auditing().V1alpha1().Webhooks().Lister(),
@@ -114,8 +107,7 @@ func TestAuditing_K8sAuditingEnabled(t *testing.T) {
 	}
 
 	ksClient := fake.NewSimpleClientset()
-	k8sClient := fakek8s.NewSimpleClientset()
-	fakeInformerFactory := informers.NewInformerFactories(k8sClient, ksClient, nil, nil, nil, nil)
+	fakeInformerFactory := informers.NewInformerFactories(nil, ksClient, nil, nil, nil, nil)
 
 	a := auditing{
 		webhookLister: fakeInformerFactory.KubeSphereSharedInformerFactory().Auditing().V1alpha1().Webhooks().Lister(),
@@ -138,14 +130,13 @@ func TestAuditing_LogRequestObject(t *testing.T) {
 			Name: "kube-auditing-webhook",
 		},
 		Spec: auditingv1alpha1.WebhookSpec{
-			AuditLevel:         v1alpha1.LevelRequestResponse,
+			AuditLevel:         v1alpha1.LevelMetadata,
 			K8sAuditingEnabled: true,
 		},
 	}
 
 	ksClient := fake.NewSimpleClientset()
-	k8sClient := fakek8s.NewSimpleClientset()
-	fakeInformerFactory := informers.NewInformerFactories(k8sClient, ksClient, nil, nil, nil, nil)
+	fakeInformerFactory := informers.NewInformerFactories(nil, ksClient, nil, nil, nil, nil)
 
 	a := auditing{
 		webhookLister: fakeInformerFactory.KubeSphereSharedInformerFactory().Auditing().V1alpha1().Webhooks().Lister(),
@@ -176,7 +167,7 @@ func TestAuditing_LogRequestObject(t *testing.T) {
 		RequestInfo: &k8srequest.RequestInfo{
 			IsResourceRequest: false,
 			Path:              "/kapis/tenant.kubesphere.io/v1alpha2/workspaces",
-			Verb:              "create",
+			Verb:              "get",
 			APIGroup:          "tenant.kubesphere.io",
 			APIVersion:        "v1alpha2",
 			Resource:          "workspaces",
@@ -186,32 +177,34 @@ func TestAuditing_LogRequestObject(t *testing.T) {
 
 	e := a.LogRequestObject(req, info)
 
-	expectedEvent := &v1alpha12.Event{
-		Event: audit.Event{
-			AuditID: e.AuditID,
-			Level:   "RequestResponse",
-			Verb:    "create",
-			Stage:   "ResponseComplete",
-			User: v1.UserInfo{
-				Username: "admin",
-				Groups: []string{
-					"system",
+	expectedEvent := &Event{
+		internalEvent: internalEvent{
+			Event: audit.Event{
+				AuditID: e.AuditID,
+				Level:   "Metadata",
+				Verb:    "get",
+				Stage:   "ResponseComplete",
+				User: v1.UserInfo{
+					Username: "admin",
+					Groups: []string{
+						"system",
+					},
 				},
-			},
-			SourceIPs: []string{
-				"192.168.0.2",
-			},
-			RequestURI:               "/kapis/tenant.kubesphere.io/v1alpha2/workspaces",
-			RequestReceivedTimestamp: e.RequestReceivedTimestamp,
-			ObjectRef: &audit.ObjectReference{
-				Resource:        "workspaces",
-				Namespace:       "",
-				Name:            "test",
-				UID:             "",
-				APIGroup:        "tenant.kubesphere.io",
-				APIVersion:      "v1alpha2",
-				ResourceVersion: "",
-				Subresource:     "",
+				SourceIPs: []string{
+					"192.168.0.2",
+				},
+				RequestURI:               "/kapis/tenant.kubesphere.io/v1alpha2/workspaces",
+				RequestReceivedTimestamp: e.RequestReceivedTimestamp,
+				ObjectRef: &audit.ObjectReference{
+					Resource:        "workspaces",
+					Namespace:       "",
+					Name:            "test",
+					UID:             "",
+					APIGroup:        "tenant.kubesphere.io",
+					APIVersion:      "v1alpha2",
+					ResourceVersion: "",
+					Subresource:     "",
+				},
 			},
 		},
 	}
@@ -234,8 +227,7 @@ func TestAuditing_LogResponseObject(t *testing.T) {
 	}
 
 	ksClient := fake.NewSimpleClientset()
-	k8sClient := fakek8s.NewSimpleClientset()
-	fakeInformerFactory := informers.NewInformerFactories(k8sClient, ksClient, nil, nil, nil, nil)
+	fakeInformerFactory := informers.NewInformerFactories(nil, ksClient, nil, nil, nil, nil)
 
 	a := auditing{
 		webhookLister: fakeInformerFactory.KubeSphereSharedInformerFactory().Auditing().V1alpha1().Webhooks().Lister(),
@@ -266,7 +258,7 @@ func TestAuditing_LogResponseObject(t *testing.T) {
 		RequestInfo: &k8srequest.RequestInfo{
 			IsResourceRequest: false,
 			Path:              "/kapis/tenant.kubesphere.io/v1alpha2/workspaces",
-			Verb:              "create",
+			Verb:              "get",
 			APIGroup:          "tenant.kubesphere.io",
 			APIVersion:        "v1alpha2",
 			Resource:          "workspaces",
@@ -281,33 +273,35 @@ func TestAuditing_LogResponseObject(t *testing.T) {
 
 	a.LogResponseObject(e, resp)
 
-	expectedEvent := &v1alpha12.Event{
-		Event: audit.Event{
-			Verb:    "create",
-			AuditID: e.AuditID,
-			Level:   "Metadata",
-			Stage:   "ResponseComplete",
-			User: v1.UserInfo{
-				Username: "admin",
-				Groups: []string{
-					"system",
+	expectedEvent := &Event{
+		internalEvent: internalEvent{
+			Event: audit.Event{
+				Verb:    "get",
+				AuditID: e.AuditID,
+				Level:   "Metadata",
+				Stage:   "ResponseComplete",
+				User: v1.UserInfo{
+					Username: "admin",
+					Groups: []string{
+						"system",
+					},
 				},
-			},
-			SourceIPs: []string{
-				"192.168.0.2",
-			},
-			ObjectRef: &audit.ObjectReference{
-				Resource:   "workspaces",
-				Name:       "test",
-				APIGroup:   "tenant.kubesphere.io",
-				APIVersion: "v1alpha2",
-			},
+				SourceIPs: []string{
+					"192.168.0.2",
+				},
+				ObjectRef: &audit.ObjectReference{
+					Resource:   "workspaces",
+					Name:       "test",
+					APIGroup:   "tenant.kubesphere.io",
+					APIVersion: "v1alpha2",
+				},
 
-			RequestReceivedTimestamp: e.RequestReceivedTimestamp,
-			StageTimestamp:           e.StageTimestamp,
-			RequestURI:               "/kapis/tenant.kubesphere.io/v1alpha2/workspaces",
-			ResponseStatus: &metav1.Status{
-				Code: 200,
+				RequestReceivedTimestamp: e.RequestReceivedTimestamp,
+				StageTimestamp:           e.StageTimestamp,
+				RequestURI:               "/kapis/tenant.kubesphere.io/v1alpha2/workspaces",
+				ResponseStatus: &metav1.Status{
+					Code: 200,
+				},
 			},
 		},
 	}
@@ -348,4 +342,186 @@ func TestResponseCapture_Write(t *testing.T) {
 
 	assert.EqualValues(t, body, resp.Bytes())
 	assert.EqualValues(t, body, record.Body.Bytes())
+}
+
+func TestNeedToCaptureRequestBody(t *testing.T) {
+
+	p := &Policy{
+		AuditPolicy: AuditPolicy{
+			ResourceName: &ValueFormatter{
+				Parts: []Part{
+					{
+						Type: TypeRequestBody,
+					},
+				},
+			},
+		},
+	}
+
+	assert.EqualValues(t, true, needToCaptureRequestBody(1, "create", audit.LevelMetadata, p))
+	assert.EqualValues(t, true, needToCaptureRequestBody(1, "get", audit.LevelMetadata, p))
+	assert.EqualValues(t, true, needToCaptureRequestBody(1, "get", audit.LevelRequest, nil))
+	assert.EqualValues(t, false, needToCaptureRequestBody(0, "get", audit.LevelMetadata, nil))
+}
+
+func TestNeedToCaptureResponseBody(t *testing.T) {
+
+	p := &Policy{
+		AuditPolicy: AuditPolicy{
+			ResourceName: &ValueFormatter{
+				Parts: []Part{
+					{
+						Type: TypeResponseBody,
+					},
+				},
+			},
+		},
+	}
+
+	assert.EqualValues(t, true, needToCaptureResponseBody(audit.LevelRequest, p))
+	assert.EqualValues(t, true, needToCaptureResponseBody(audit.LevelRequestResponse, nil))
+	assert.EqualValues(t, true, needToCaptureResponseBody(audit.LevelRequestResponse, p))
+	assert.EqualValues(t, false, needToCaptureResponseBody(audit.LevelRequest, nil))
+}
+
+func TestGetValue(t *testing.T) {
+
+	p := &Policy{
+		AuditPolicy: AuditPolicy{
+			Path: "/kapis/auditing.kubesphere.io/namespaces/{namespace}/pod",
+			ResourceName: &ValueFormatter{
+				Connector: ",",
+				Parts: []Part{
+					{
+						Type: TypePathParameter,
+						Key:  "namespace",
+					},
+					{
+						Type: TypeRequestBody,
+						Key:  "spec.containers[1:3].name",
+					},
+					{
+						Type: TypeResponseBody,
+						Key:  "status.code",
+					},
+				},
+			},
+		},
+	}
+
+	requestBody := "{" +
+		"    \"metadata\":{" +
+		"        \"name\":\"ks-apiserver\"," +
+		"        \"namespace\":\"kubesphere-system\"" +
+		"    },\n    \"spec\":{" +
+		"        \"containers\":[" +
+		"            {" +
+		"                \"name\":\"ks-apiserver\"" +
+		"            }," +
+		"            {" +
+		"                \"name\":\"ks-console\"" +
+		"            }," +
+		"           {" +
+		"                \"name\":\"redis\"" +
+		"            }," +
+		"            {" +
+		"                \"name\":\"open-ldap\"" +
+		"            }" +
+		"        ]" +
+		"    }" +
+		"}"
+
+	responseBody := "{" +
+		"    \"message\":\"success\"," +
+		"    \"status\":{" +
+		"        \"code\":200" +
+		"   }" +
+		"}"
+
+	e := &Event{
+		requestBody:  []byte(requestBody),
+		responseBody: []byte(responseBody),
+		policy:       p,
+	}
+	e.RequestURI = "/kapis/auditing.kubesphere.io/namespaces/test/pod"
+
+	value, _ := e.getResourceName()
+	assert.EqualValues(t, "test,ks-console,redis,200", value)
+
+	p = &Policy{
+		AuditPolicy: AuditPolicy{
+			ResourceName: &ValueFormatter{
+				Connector: ".",
+				Parts: []Part{
+					{
+						Type: TypeRequestBody,
+						Key:  "spec.containers[1:].name",
+					},
+				},
+			},
+		},
+	}
+
+	e.policy = p
+	value, _ = e.getResourceName()
+	assert.EqualValues(t, "ks-console.redis.open-ldap", value)
+
+	p = &Policy{
+		AuditPolicy: AuditPolicy{
+			ResourceName: &ValueFormatter{
+				Connector: ".",
+				Parts: []Part{
+					{
+						Type: TypeRequestBody,
+						Key:  "spec.containers[:4].name",
+					},
+				},
+			},
+		},
+	}
+
+	e.policy = p
+	value, _ = e.getResourceName()
+	assert.EqualValues(t, "ks-apiserver.ks-console.redis.open-ldap", value)
+
+	p = &Policy{
+		AuditPolicy: AuditPolicy{
+			ResourceName: &ValueFormatter{
+				Connector: ".",
+				Parts: []Part{
+					{
+						Type: TypeRequestBody,
+						Key:  "spec.containers[2].name",
+					},
+				},
+			},
+		},
+	}
+
+	e.policy = p
+	value, _ = e.getResourceName()
+	assert.EqualValues(t, "redis", value)
+
+	e.policy = nil
+	e.create = true
+	value, _ = e.getResourceName()
+	assert.EqualValues(t, "ks-apiserver", value)
+}
+
+func TestPolicy_Match(t *testing.T) {
+
+	p := &Policy{
+		AuditPolicy: AuditPolicy{
+			Path: "/devops/{devops}/pipelines/{pipeline}/runs/{run}/stop",
+			Method: []string{
+				"post",
+			},
+		},
+	}
+
+	p.createCompile()
+
+	assert.EqualValues(t, true, p.Match("post", "////devops///devops///pipelines///pipeline////runs/run////stop////"))
+	assert.EqualValues(t, false, p.Match("post", "/devops/devops/pipelines/pipeline/runs"))
+	assert.EqualValues(t, false, p.Match("post", "/devops/devops/pipelines/pipeline/runs/run/nodes/node/steps/step"))
 }

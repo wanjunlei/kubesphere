@@ -1,0 +1,555 @@
+# policies of cluster
+- path: /kapis/cluster.kubesphere.io/v1alpha1/clusters/validation
+  method:
+    - Post
+  verb: validation
+  resource: cluster
+  name:
+    parts:
+      - type: RequestBody
+        key: metadata.name
+
+# policies of openpitrix
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/clusters/{cluster}/namespaces/{namespace}/applications
+  method:
+    - Post
+  resource: applications
+  subresource: ""
+  cluster:
+    parts:
+      - type: PathParameter
+        key: cluster
+  workspace:
+    parts:
+      - type: Constant
+        key: ""
+  namespace:
+    parts:
+      - type: PathParameter
+        key: namespace
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/clusters/{cluster}/namespaces/{namespace}/applications/{application}
+  method:
+    - Patch
+    - Post
+  resource: applications
+  subresource: ""
+  cluster:
+    parts:
+      - type: PathParameter
+        key: cluster
+  workspace:
+    parts:
+      - type: Constant
+        key: ""
+  namespace:
+    parts:
+      - type: PathParameter
+        key: namespace
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/clusters/{cluster}/namespaces/{namespace}/applications/{application}
+  method:
+    - Delete
+  resource: applications
+  subresource: ""
+  cluster:
+    parts:
+      - type: PathParameter
+        key: cluster
+  workspace:
+    parts:
+      - type: Constant
+        key: ""
+  namespace:
+    parts:
+      - type: PathParameter
+        key: namespace
+  name:
+    parts:
+      - type: PathParameter
+        key: application
+
+- path: /kapis/openpitrix.io/v1/apps
+  method:
+    - Post
+  ignore: true
+- path: /kapis/openpitrix.io/v1/apps/{app}
+  method:
+    - Patch
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+- path: /kapis/openpitrix.io/v1/apps/{app}/action
+  method:
+    - Post
+  resource: action
+  subresource: apps.action
+  name:
+    parts:
+      - type: PathParameter
+        key: app
+      - type: RequestBody
+        key: action
+
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/apps
+  method:
+    - Post
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/apps/{app}
+  method:
+    - Patch
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/apps/{app}/action
+  method:
+    - Post
+  resource: action
+  subresource: apps.action
+  name:
+    parts:
+      - type: PathParameter
+        key: app
+      - type: RequestBody
+        key: action
+
+- path: /kapis/openpitrix.io/v1/apps/{app}/versions
+  method:
+    - Post
+  ignore: true
+- path: /kapis/openpitrix.io/v1/apps/{app}/versions/{version}
+  method:
+    - Patch
+  resource: versions
+  subresource: apps.versions
+  name:
+    parts:
+      - type: PathParameter
+        key: app
+      - type: PathParameter
+        key: version
+- path: /kapis/openpitrix.io/v1/apps/{app}/versions/{version}
+  method:
+    - Delete
+  resource: versions
+  subresource: apps.versions
+  name:
+    parts:
+      - type: PathParameter
+        key: app
+      - type: PathParameter
+        key: version
+- path: /kapis/openpitrix.io/v1/apps/{app}/versions/{version}/action
+  method:
+    - Post
+  resource: action
+  subresource: apps.versions.action
+  name:
+    parts:
+      - type: PathParameter
+        key: app
+      - type: PathParameter
+        key: version
+      - type: RequestBody
+        key: action
+
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/apps/{app}/versions
+  method:
+    - Post
+  resource: versions
+  subresource: apps.versions
+  name:
+    parts:
+      - type: PathParameter
+        key: app
+      - type: ResponseBody
+        key: version_id
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/apps/{app}/versions/{version}
+  method:
+    - Patch
+  resource: versions
+  subresource: apps.versions
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+      - type: PathParameter
+        key: version
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/apps/{app}/versions/{version}
+  method:
+    - Delete
+  resource: versions
+  subresource: apps.versions
+  name:
+    parts:
+      - type: PathParameter
+        key: app
+      - type: PathParameter
+        key: version
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/apps/{app}/versions/{version}/action
+  method:
+    - Post
+  resource: action
+  subresource: apps.versions.action
+  name:
+    parts:
+      - type: PathParameter
+        key: app
+      - type: PathParameter
+        key: version
+      - type: RequestBody
+        key: action
+
+- path: /kapis/openpitrix.io/v1/categories
+  method:
+    - Post
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+- path: /kapis/openpitrix.io/v1/categories/{category}
+  method:
+    - Patch
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+
+- path: /kapis/openpitrix.io/v1/repos/{repo}/action
+  method:
+    - Post
+  ignore: true
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/repos
+  method:
+    - Post
+  workspace:
+    parts:
+      - type: Constant
+        key: ""
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/repos/{repo}
+  method:
+    - Patch
+  workspace:
+    parts:
+      - type: Constant
+        key: ""
+  name:
+    parts:
+      - type: RequestBody
+        key: name
+- path: /kapis/openpitrix.io/v1/workspaces/{workspace}/repos/{repo}/action
+  method:
+    - Post
+  verb: sync
+  subresource: ""
+  workspace:
+    parts:
+      - type: Constant
+        key: ""
+  name:
+    parts:
+      - type: PathParameter
+        key: repo
+
+# policies of devops
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/runs/{run}/stop
+  method:
+    - Post
+  verb: stop
+  resource: runs
+  subresource: pipelines.runs
+  name:
+    parts:
+      - type: PathParameter
+        key: pipeline
+      - type: PathParameter
+        key: run
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/runs/{run}/replay
+  method:
+    - Post
+  verb: replay
+  resource: runs
+  subresource: pipelines.runs
+  name:
+    parts:
+      - type: PathParameter
+        key: pipeline
+      - type: PathParameter
+        key: run
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/run
+  method:
+    - Post
+  resource: runs
+  subresource: pipelines.runs
+  name:
+    parts:
+      - type: PathParameter
+        key: pipeline
+      - type: ResponseBody
+        key: id
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/runs/{run}/nodes/{node}/steps/{step}
+  method:
+    - Post
+  verb: review
+  resource: steps
+  subresource: pipelines.runs.node.steps
+  name:
+    parts:
+      - type: PathParameter
+        key: pipeline
+      - type: PathParameter
+        key: run
+      - type: PathParameter
+        key: node
+      - type: PathParameter
+        key: step
+
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/branches/{branch}/runs/{run}/stop
+  method:
+    - Post
+  verb: stop
+  resource: runs
+  subresource: pipelines.branches.runs
+  name:
+    parts:
+      - type: PathParameter
+        key: pipeline
+      - type: PathParameter
+        key: branch
+      - type: PathParameter
+        key: run
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/branches/{branch}/runs/{run}/replay
+  method:
+    - Post
+  verb: replay
+  resource: runs
+  subresource: pipelines.branches.runs
+  name:
+    parts:
+      - type: PathParameter
+        key: pipeline
+      - type: PathParameter
+        key: branch
+      - type: PathParameter
+        key: run
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/branches/{branch}/run
+  method:
+    - Post
+  resource: runs
+  subresource: pipelines.branches.runs
+  name:
+    parts:
+      - type: PathParameter
+        key: pipeline
+      - type: PathParameter
+        key: branch
+      - type: ResponseBody
+        key: id
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/branches/{branch}/runs/{run}/nodes/{node}/steps/{step}
+  method:
+    - Post
+  verb: review
+  resource: steps
+  subresource: pipelines.branches.runs.node.steps
+  name:
+    parts:
+      - type: PathParameter
+        key: pipeline
+      - type: PathParameter
+        key: branch
+      - type: PathParameter
+        key: run
+      - type: PathParameter
+        key: node
+      - type: PathParameter
+        key: step
+
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/scan
+  method:
+    - Post
+  ignore: true
+- path: /kapis/devops.kubesphere.io/v1alpha2/scms/{scm}/servers
+  method:
+    - Post
+  ignore: true
+- path: /kapis/devops.kubesphere.io/v1alpha2/scms/{scm}/verify
+  method:
+    - Post
+  ignore: true
+- path: /kapis/devops.kubesphere.io/v1alpha2/webhook/git
+  method:
+    - Post
+  ignore: true
+- path: /kapis/devops.kubesphere.io/v1alpha2/webhook/github
+  method:
+    - Post
+  ignore: true
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/pipelines/{pipeline}/checkScriptCompile
+  method:
+    - Post
+  ignore: true
+- path: /kapis/devops.kubesphere.io/v1alpha2/devops/{devops}/checkCron
+  method:
+    - Post
+  ignore: true
+- path: /kapis/devops.kubesphere.io/v1alpha2/tojson
+  method:
+    - Post
+  ignore: true
+- path: /kapis/devops.kubesphere.io/v1alpha2/tojenkinsfile
+  method:
+    - Post
+  ignore: true
+- path: /kapis/devops.kubesphere.io/v1alpha2/namespaces/{namespace}/s2ibinaries/{s2ibinary}/file
+  method:
+    - Put
+  ignore: true
+
+# policies of user
+- path: /kapis/iam.kubesphere.io/v1alpha2/clustermembers
+  method:
+    - Post
+  name:
+    connector: ','
+    parts:
+      - type: RequestBody
+        key: Body[0:].username
+- path: /kapis/iam.kubesphere.io/v1alpha2/workspaces/{workspace}/workspacemembers
+  method:
+    - Post
+  name:
+    connector: ','
+    parts:
+      - type: RequestBody
+        key: Body[0:].username
+- path: /kapis/iam.kubesphere.io/v1alpha2/namespaces/{namespace}/members
+  method:
+    - Post
+  name:
+    connector: ','
+    parts:
+      - type: RequestBody
+        key: Body[0:].username
+- path: /kapis/iam.kubesphere.io/v1alpha2/devops/{devops}/members
+  method:
+    - Post
+  name:
+    connector: ','
+    parts:
+      - type: RequestBody
+        key: Body[0:].username
+
+# policies of operator
+- path: /kapis/operations.kubesphere.io/v1alpha2/namespaces/{namespace}/jobs/{job}
+  method:
+    - Post
+  verb: rerun
+
+# policies of resources
+- path: /kapis/resources.kubesphere.io/v1alpha2/registry/verify
+  method:
+    - Post
+  ignore: true
+- path: /kapis/resources.kubesphere.io/v1alpha2/git/verify
+  method:
+    - Post
+  ignore: true
+
+# policies of oauth
+- path: /oauth/authenticate
+  method:
+    - Post
+  ignore: true
+
+# policies of notification
+- path: /kapis/notification.kubesphere.io/v1/addresses
+  ignore: true
+- path: /kapis/notification.kubesphere.io/v1/addresses/{address}
+  ignore: true
+- path: /kapis/notification.kubesphere.io/v1/addresslists
+  ignore: true
+- path: /kapis/notification.kubesphere.io/v1/addresslists/{addresslist}
+  ignore: true
+- path: /kapis/notification.kubesphere.io/v1/tasks/retry
+  ignore: true
+- path: /kapis/notification.kubesphere.io/v1/notifications
+  ignore: true
+- path: /kapis/clusters/{cluster}/notification.kubesphere.io/v1/addresses
+  ignore: true
+- path: /kapis/clusters/{cluster}/notification.kubesphere.io/v1/addresses/{address}
+  ignore: true
+- path: /kapis/clusters/{cluster}/notification.kubesphere.io/v1/addresslists
+  ignore: true
+- path: /kapis/clusters/{cluster}/notification.kubesphere.io/v1/addresslists/{addresslist}
+  ignore: true
+- path: /kapis/clusters/{cluster}/notification.kubesphere.io/v1/tasks/retry
+  ignore: true
+- path: /kapis/clusters/{cluster}/notification.kubesphere.io/v1/notifications
+  ignore: true
+
+# policies of alert
+- path: /kapis/alerting.kubesphere.io/v1/nodes/alert
+  method:
+    - Post
+  resource: alertpolicy
+  name:
+    parts:
+      - type: RequestBody
+        key: alert.alert_name
+- path: /kapis/alerting.kubesphere.io/v1/nodes/policy
+  method:
+    - Patch
+  resource: alertpolicy
+  name:
+    parts:
+      - type: RequestBody
+        key: alert_name
+- path: /kapis/alerting.kubesphere.io/v1/nodes/alert
+  method:
+    - Patch
+    - Delete
+  resource: alertpolicy
+  name:
+    parts:
+      - type: QueryParameter
+        key: alert_names
+- path: /kapis/clusters/{cluster}/alerting.kubesphere.io/v1/nodes/alert
+  method:
+    - Post
+  resource: alertpolicy
+  name:
+    parts:
+      - type: RequestBody
+        key: alert.alert_name
+- path: /kapis/clusters/{cluster}/alerting.kubesphere.io/v1/nodes/policy
+  method:
+    - Patch
+  resource: alertpolicy
+  name:
+    parts:
+      - type: RequestBody
+        key: alert_name
+- path: /kapis/clusters/{cluster}/alerting.kubesphere.io/v1/nodes/alert
+  method:
+    - Patch
+    - Delete
+  resource: alertpolicy
+  name:
+    parts:
+      - type: QueryParameter
+        key: alert_names
