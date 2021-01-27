@@ -106,6 +106,10 @@ const (
 	AuditingQueryTag = "Auditing Query"
 
 	AlertingTag = "Alerting"
+
+	NotificationTag                 = "Notification"
+	KubeSphereNotificationNamespace = "kubesphere-notification-system"
+	NotificationManagedLabel        = "notification-manager/managed"
 )
 
 var (
