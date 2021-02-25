@@ -30,8 +30,12 @@ import (
 	devopsv1alpha3 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/devops/v1alpha3"
 	iamv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/iam/v1alpha2"
 	networkv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/network/v1alpha1"
+<<<<<<< HEAD
 	notificationv2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/notification/v2"
 	quotav1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/quota/v1alpha2"
+=======
+	notificationv2alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/notification/v2alpha1"
+>>>>>>> change notification crd version to v2alpha1
 	servicemeshv1alpha2 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/servicemesh/v1alpha2"
 	storagev1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/storage/v1alpha1"
 	tenantv1alpha1 "kubesphere.io/kubesphere/pkg/client/clientset/versioned/typed/tenant/v1alpha1"
@@ -47,8 +51,12 @@ type Interface interface {
 	DevopsV1alpha3() devopsv1alpha3.DevopsV1alpha3Interface
 	IamV1alpha2() iamv1alpha2.IamV1alpha2Interface
 	NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface
+<<<<<<< HEAD
 	NotificationV2() notificationv2.NotificationV2Interface
 	QuotaV1alpha2() quotav1alpha2.QuotaV1alpha2Interface
+=======
+	NotificationV2alpha1() notificationv2alpha1.NotificationV2alpha1Interface
+>>>>>>> change notification crd version to v2alpha1
 	ServicemeshV1alpha2() servicemeshv1alpha2.ServicemeshV1alpha2Interface
 	StorageV1alpha1() storagev1alpha1.StorageV1alpha1Interface
 	TenantV1alpha1() tenantv1alpha1.TenantV1alpha1Interface
@@ -60,6 +68,7 @@ type Interface interface {
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
+<<<<<<< HEAD
 	auditingV1alpha1    *auditingv1alpha1.AuditingV1alpha1Client
 	clusterV1alpha1     *clusterv1alpha1.ClusterV1alpha1Client
 	devopsV1alpha1      *devopsv1alpha1.DevopsV1alpha1Client
@@ -73,6 +82,20 @@ type Clientset struct {
 	tenantV1alpha1      *tenantv1alpha1.TenantV1alpha1Client
 	tenantV1alpha2      *tenantv1alpha2.TenantV1alpha2Client
 	typesV1beta1        *typesv1beta1.TypesV1beta1Client
+=======
+	auditingV1alpha1     *auditingv1alpha1.AuditingV1alpha1Client
+	clusterV1alpha1      *clusterv1alpha1.ClusterV1alpha1Client
+	devopsV1alpha1       *devopsv1alpha1.DevopsV1alpha1Client
+	devopsV1alpha3       *devopsv1alpha3.DevopsV1alpha3Client
+	iamV1alpha2          *iamv1alpha2.IamV1alpha2Client
+	networkV1alpha1      *networkv1alpha1.NetworkV1alpha1Client
+	notificationV2alpha1 *notificationv2alpha1.NotificationV2alpha1Client
+	servicemeshV1alpha2  *servicemeshv1alpha2.ServicemeshV1alpha2Client
+	storageV1alpha1      *storagev1alpha1.StorageV1alpha1Client
+	tenantV1alpha1       *tenantv1alpha1.TenantV1alpha1Client
+	tenantV1alpha2       *tenantv1alpha2.TenantV1alpha2Client
+	typesV1beta1         *typesv1beta1.TypesV1beta1Client
+>>>>>>> change notification crd version to v2alpha1
 }
 
 // AuditingV1alpha1 retrieves the AuditingV1alpha1Client
@@ -105,9 +128,9 @@ func (c *Clientset) NetworkV1alpha1() networkv1alpha1.NetworkV1alpha1Interface {
 	return c.networkV1alpha1
 }
 
-// NotificationV2 retrieves the NotificationV2Client
-func (c *Clientset) NotificationV2() notificationv2.NotificationV2Interface {
-	return c.notificationV2
+// NotificationV2alpha1 retrieves the NotificationV2alpha1Client
+func (c *Clientset) NotificationV2alpha1() notificationv2alpha1.NotificationV2alpha1Interface {
+	return c.notificationV2alpha1
 }
 
 // QuotaV1alpha2 retrieves the QuotaV1alpha2Client
@@ -185,7 +208,7 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	if err != nil {
 		return nil, err
 	}
-	cs.notificationV2, err = notificationv2.NewForConfig(&configShallowCopy)
+	cs.notificationV2alpha1, err = notificationv2alpha1.NewForConfig(&configShallowCopy)
 	if err != nil {
 		return nil, err
 	}
@@ -231,8 +254,12 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 	cs.devopsV1alpha3 = devopsv1alpha3.NewForConfigOrDie(c)
 	cs.iamV1alpha2 = iamv1alpha2.NewForConfigOrDie(c)
 	cs.networkV1alpha1 = networkv1alpha1.NewForConfigOrDie(c)
+<<<<<<< HEAD
 	cs.notificationV2 = notificationv2.NewForConfigOrDie(c)
 	cs.quotaV1alpha2 = quotav1alpha2.NewForConfigOrDie(c)
+=======
+	cs.notificationV2alpha1 = notificationv2alpha1.NewForConfigOrDie(c)
+>>>>>>> change notification crd version to v2alpha1
 	cs.servicemeshV1alpha2 = servicemeshv1alpha2.NewForConfigOrDie(c)
 	cs.storageV1alpha1 = storagev1alpha1.NewForConfigOrDie(c)
 	cs.tenantV1alpha1 = tenantv1alpha1.NewForConfigOrDie(c)
@@ -252,8 +279,12 @@ func New(c rest.Interface) *Clientset {
 	cs.devopsV1alpha3 = devopsv1alpha3.New(c)
 	cs.iamV1alpha2 = iamv1alpha2.New(c)
 	cs.networkV1alpha1 = networkv1alpha1.New(c)
+<<<<<<< HEAD
 	cs.notificationV2 = notificationv2.New(c)
 	cs.quotaV1alpha2 = quotav1alpha2.New(c)
+=======
+	cs.notificationV2alpha1 = notificationv2alpha1.New(c)
+>>>>>>> change notification crd version to v2alpha1
 	cs.servicemeshV1alpha2 = servicemeshv1alpha2.New(c)
 	cs.storageV1alpha1 = storagev1alpha1.New(c)
 	cs.tenantV1alpha1 = tenantv1alpha1.New(c)
