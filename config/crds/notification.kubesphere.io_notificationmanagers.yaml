@@ -10,6 +10,8 @@ metadata:
 spec:
   group: notification.kubesphere.io
   names:
+    categories:
+    - notification-manager
     kind: NotificationManager
     listKind: NotificationManagerList
     plural: notificationmanagers
@@ -18,7 +20,7 @@ spec:
     singular: notificationmanager
   scope: Cluster
   versions:
-  - name: v2alpha1
+  - name: v2beta1
     schema:
       openAPIV3Schema:
         description: NotificationManager is the Schema for the notificationmanagers API
@@ -410,6 +412,9 @@ spec:
                     description: matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
                     type: object
                 type: object
+              defaultSecretNamespace:
+                description: The default namespace to which notification manager secrets belong.
+                type: string
               image:
                 description: Docker Image used to start Notification Manager container, for example kubesphere/notification-manager:v0.1.0
                 type: string
@@ -1511,6 +1516,8 @@ spec:
         type: object
     served: true
     storage: true
+    subresources:
+      status: {}
 status:
   acceptedNames:
     kind: ""
